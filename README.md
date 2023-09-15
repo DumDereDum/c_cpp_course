@@ -2,7 +2,7 @@
 
 
 ## Lessons
-[lesson_1](https://github.com/DumDereDum/c_cpp_course/lesson_1) - classic "Hellow world" example
+[lesson_1](https://github.com/DumDereDum/c_cpp_course/lesson_1) - classic "Hello world" example
 
 
 ## VS code extensions

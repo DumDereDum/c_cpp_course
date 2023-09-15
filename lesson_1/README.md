@@ -12,7 +12,7 @@ g++ -c hello_world.cpp
 g++ hello_world.cpp -o hello_world
 
 # Run
-./hellow_world
+./hello_world
 ```
 
 ```mermaid
@@ -20,5 +20,5 @@ g++ hello_world.cpp -o hello_world
     hello_world.cpp --> hello_world.cpp*
     hello_world.cpp* --> hello_world.s
     hello_world.s --> hello_world.o
-    hello_world.o --> hellow_world
+    hello_world.o --> hello_world
 ```
