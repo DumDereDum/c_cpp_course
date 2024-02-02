@@ -1,7 +1,7 @@
 # c_cpp_course
 
 ## Lections
-* [Констрантные обьекты и функции](./cpp_lessons/l3_static_const.md)
+* [Константные объекты и функции](./cpp_lessons/l3_static_const.md)
 * [Перегрузка](./cpp_lessons/l4_overloading.md)
 * [Наследование и виртуальные функции](./cpp_lessons/l5_inheritance.md)
 
