@@ -1,0 +1,3 @@
+/home/bat/hse/c_cpp_course/lesson_7/build/CMakeFiles/calculator.dir
+/home/bat/hse/c_cpp_course/lesson_7/build/CMakeFiles/edit_cache.dir
+/home/bat/hse/c_cpp_course/lesson_7/build/CMakeFiles/rebuild_cache.dir

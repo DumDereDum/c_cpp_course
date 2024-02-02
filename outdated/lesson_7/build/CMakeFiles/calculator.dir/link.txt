@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/calculator.dir/calculator/calculator.cpp.o CMakeFiles/calculator.dir/calculator/main.cpp.o -o calculator 

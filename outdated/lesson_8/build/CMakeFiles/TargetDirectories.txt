@@ -1,0 +1,6 @@
+/home/bat/hse/c_cpp_course/lesson_8/build/CMakeFiles/intrinsics_gen.dir
+/home/bat/hse/c_cpp_course/lesson_8/build/CMakeFiles/omp_gen.dir
+/home/bat/hse/c_cpp_course/lesson_8/build/CMakeFiles/acc_gen.dir
+/home/bat/hse/c_cpp_course/lesson_8/build/CMakeFiles/calculator.dir
+/home/bat/hse/c_cpp_course/lesson_8/build/CMakeFiles/edit_cache.dir
+/home/bat/hse/c_cpp_course/lesson_8/build/CMakeFiles/rebuild_cache.dir
