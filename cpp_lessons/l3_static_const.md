@@ -1,6 +1,6 @@
 # Const
 
-**[КОД](cpp_examples/Ratioanl)**
+**[КОД](../cpp_examples/Rational/)**
 
 ## 1. Констрантные перменные
 
