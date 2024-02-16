@@ -51,8 +51,23 @@ int main() {
     std::cout << "r1: " << double(r1) << std::endl;
     std::cout << "r2: " << double(r2) << std::endl;
 
-    std::cout << "1.4 + 1/2 = " << 1.4 + Rational(1, 2) << std::endl;
+    std::cout << "!r2: " << !r2 << std::endl;
+    std::cout << "r2[0]: " << r2[0] << std::endl;
+    std::cout << "r2[1]: " << r2[1] << std::endl;
+    std::cout << "r2(): " << r2() << std::endl;
     
+    std::cout << "1.4 + 1/2 = " << 1.4 + Rational(1, 2) << std::endl;
+
+    Rational r3;
+    std::cin >> r3;
+    std::cout << "r1: " << double(r1) << std::endl;
+    std::cout << "r3: " << double(r3) << std::endl;
+    r1 = std::move(r3);    
+    std::cout << "r1: " << double(r1) << std::endl;
+    std::cout << "r3: " << double(r3) << std::endl;
+    r1 = r3;    
+    std::cout << "r1: " << double(r1) << std::endl;
+    std::cout << "r3: " << double(r3) << std::endl;
 
     return 0;
 }
