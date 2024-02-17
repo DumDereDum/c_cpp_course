@@ -1,6 +1,39 @@
 #include <cmath>
+#include <cstring>
 
 #include "Forms.hpp"
+
+
+Form::Form(const char* color) {
+    // Проверяем входной цвет
+    if (isValidColor(color)) {
+        // Определяем длину строки цвета
+        color_length = strlen(color);
+        // Выделяем память и копируем строку
+        this->color = new char[color_length + 1];
+        strcpy(this->color, color);
+    } else {
+        // Если цвет недопустим, устанавливаем серый
+        color_length = strlen("gray");
+        this->color = new char[color_length + 1];
+        strcpy(this->color, "gray");
+    }
+}
+
+Form::~Form() {
+    delete[] color; // освобождаем выделенную память для цвета
+}
+
+const char* Form::getColor() const {
+    return color;
+}
+
+bool Form::isValidColor(const char* color) {
+    // Здесь можно добавить проверку на допустимые цвета
+    // Например, можно проверить, что строка color является одним из допустимых цветов
+    return true; // пока просто возвращаем true, не выполняя проверку
+}
+
 
 double Circle::area() const {
     return 3.14 * radius * radius;
