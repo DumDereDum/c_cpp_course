@@ -70,3 +70,203 @@ double operator+(double d, int a);
 ## Возвращаемое значение:
 
 Перегруженные операторы могут возвращать любой тип данных, но часто они возвращают значение того же типа, что и операнды.
+
+# Пример
+
+## Операторы сложения
+
+```c++
+Rational operator+(const Rational& other) const;
+Rational operator-(const Rational& other) const;
+Rational operator*(const Rational& other) const;
+Rational operator/(const Rational& other) const;
+...
+Rational Rational::operator+(const Rational& other) const {
+    int num = numerator * other.denominator + other.numerator * denominator;
+    int denom = denominator * other.denominator;
+    return Rational(num, denom);
+}
+...
+```
+
+Операторы +, -, * и / для класса Rational принимают другой объект Rational как константную ссылку (const Rational& other) и возвращают новый объект Rational. Они помечены как const, что гарантирует, что они не изменяют состояние текущего объекта Rational. Использование константных ссылок и const обеспечивает безопасную и эффективную работу с объектами Rational.
+
+```c++
+Rational operator+(double d, const Rational& rational);
+Rational operator-(double d, const Rational& rational);
+Rational operator*(double d, const Rational& rational);
+Rational operator/(double d, const Rational& rational);
+...
+Rational operator+(double d, const Rational& rational) {
+    return Rational(d) + rational;
+}
+...
+```
+
+Операторы +, -, *, и / между числом типа double и объектом типа Rational позволяют выполнять арифметические операции. Каждый из них создает новый объект Rational, который представляет результат операции между числом double и объектом Rational. Это обеспечивает удобство и гибкость при работе с разными типами данных в арифметических выражениях.
+
+## Операторы присваивания
+
+```C++
+Rational& operator=(Rational& other);
+Rational& operator=(Rational&& other);
+```
+
+Операторы присваивания operator= в классе Rational позволяют присваивать один объект Rational другому. В данном случае у вас есть две версии оператора присваивания:
+
+1. Оператор присваивания с lvalue ссылкой (Rational& operator=(Rational& other)):
+
+    * Этот оператор принимает ссылку на объект типа Rational в качестве параметра.
+    * Возвращает ссылку на объект типа Rational.
+    * Обычно используется для присваивания значений между двумя существующими объектами Rational.
+    * Не подходит для работы с временными объектами.
+
+2. Оператор присваивания с rvalue ссылкой (Rational& operator=(Rational&& other)):
+
+    * Этот оператор принимает rvalue ссылку на объект типа Rational в качестве параметра.
+    * Возвращает ссылку на объект типа Rational.
+    * Этот оператор обычно используется для присваивания значений временных объектов Rational, которые были созданы во время выполнения программы.
+    * Он обычно эффективнее, так как позволяет избежать копирования данных и просто переносит ресурсы из одного объекта в другой.
+
+## Операторы сравнения
+
+```C++
+bool operator==(const Rational& other) const;
+bool operator!=(const Rational& other) const;
+bool operator<(const Rational& other) const;
+bool operator>(const Rational& other) const;
+bool operator<=(const Rational& other) const;
+bool operator>=(const Rational& other) const;
+...
+bool Rational::operator==(const Rational& other) const {
+    return (numerator == other.numerator) && (denominator == other.denominator);
+}
+...
+```
+
+Эти операторы позволяют сравнивать объекты Rational друг с другом. Они используют константные ссылки, чтобы предотвратить изменение объектов, которые передаются для сравнения. Методы класса, которые определяют эти операторы, также помечены как const, чтобы гарантировать, что они не изменяют состояние объекта, на котором они вызываются.
+
+Использование константных ссылок (const Rational&) гарантирует, что объекты Rational не будут изменены в процессе сравнения, а ключевое слово const в конце метода обеспечивает, что вызов этих операторов не изменит состояние объекта, на котором они вызываются. Это повышает безопасность и понятность кода, а также позволяет использовать операторы сравнения в константных объектах и в константных методах класса.
+
+## Оператор отрицания '!'
+
+```C++
+Rational operator!() const;
+...
+Rational Rational::operator!() const {
+    return Rational(denominator, numerator);
+}
+...
+```
+В данном примере оператор operator! в классе Rational переворачивает дробь, он меняет местами числитель и знаменатель. Таким образом, если у нас есть рациональное число, например, 3/4, оператор ! должен вернуть дробь 4/3.
+
+
+
+## Оператор доступа '[ ]'
+
+```C++
+int operator[](int index) const;
+...
+int Rational::operator[](int index) const {
+    if (index == 0) return numerator;
+    else if (index == 1) return denominator;
+    else throw std::out_of_range("Index out of range for Rational object");
+}
+...
+```
+
+Оператор operator[] в классе Rational предполагает доступ к элементам объекта класса с помощью индексации, как если бы объект класса был массивом. Однако, обычно этот оператор применяется к классам, которые имеют внутреннюю структуру данных, поддерживающую доступ к элементам по индексу.
+
+Например, если у вас есть класс Rational, который представляет рациональное число, то оператор operator[] может быть использован для доступа к его внутренним элементам, хотя это не самый типичный способ использования данного оператора для подобного класса.
+
+
+## Оператор функциональности '( )'
+
+```C++
+double operator()() const;
+...
+double Rational::operator()() const {
+    return static_cast<double>(numerator) / static_cast<double>(denominator);
+}
+...
+```
+Оператор operator() в классе Rational предназначен для создания функциональности, которая позволяет использовать объект класса Rational как функцию. В данном случае оператор operator() может быть реализован так, чтобы возвращать значение типа double, представляющее значение объекта Rational в виде десятичной дроби или числа с плавающей запятой.
+
+
+## Операторы преобразования
+
+```C++
+operator double() const;
+operator int() const;
+...
+Rational::operator double() const {
+    return static_cast<double>(numerator) / denominator;
+}
+Rational::operator int() const {
+    return numerator / denominator;
+}
+...
+```
+Операторы преобразования типа operator double() и operator int() в классе Rational позволяют явно преобразовывать объекты класса Rational в числа с плавающей запятой (double) и целые числа (int) соответственно.
+
+
+## Оператор вывода '<<'
+```C++
+friend std::ostream& operator<<(std::ostream& os, const Rational& rational);
+...
+std::ostream& operator<<(std::ostream& os, const Rational& rational) {
+    os << rational.numerator << "/" << rational.denominator;
+    return os;
+}
+...
+```
+Оператор operator<< в классе Rational перегружен как дружественная функция для вывода объектов типа Rational в поток вывода std::ostream, такой как std::cout.
+
+Дружественная функция означает, что функция имеет доступ к приватным и защищенным членам класса, но она не является методом этого класса. В данном случае, перегруженный оператор << позволяет выводить объекты класса Rational с помощью потока вывода std::ostream, что упрощает их отображение в стандартном выводе или любом другом потоке вывода.
+
+Эта функция operator<< принимает два параметра: ссылку на объект потока вывода std::ostream& os и ссылку на константный объект const Rational& rational для вывода. Внутри функции используется доступ к приватным членам numerator и denominator объекта Rational, чтобы вывести их в виде "числитель/знаменатель" в поток вывода.
+
+## Оператор ввода '>>'
+
+```C++
+friend std::istream& operator>>(std::istream& in, Rational& rational);
+...
+std::istream& operator>>(std::istream& in, Rational& rational) {
+    int num, denom;
+    char slash;
+    in >> num;
+    if (!in.eof() && in.peek() == '/') {
+        in >> slash;
+        in >> denom;
+        if (denom == 0) {
+            in.setstate(std::ios::failbit);
+            return in;
+        }
+    } else {
+        denom = 1;
+    }
+    rational = Rational(num, denom);
+    return in;
+}
+```
+Оператор operator>> для класса Rational перегружен в виде дружественной функции для чтения данных из потока ввода std::istream и их присвоения объекту типа Rational.
+
+Эта функция operator>> принимает два параметра: ссылку на объект потока ввода std::istream& in и ссылку на объект Rational& rational, в который будет записано считанное значение.
+
+Подробно о работе функции:
+
+1. Считывание числителя: Сначала из потока ввода in считывается числитель и сохраняется в переменную num.
+
+2. Проверка символа /: Далее происходит проверка, следует ли за числителем символ /. Если нет, то знаменатель устанавливается по умолчанию равным 1.
+
+3. Считывание знаменателя: Если за числителем следует символ /, то из потока ввода считывается знаменатель и сохраняется в переменную denom.
+
+4. Проверка знаменателя: После считывания знаменателя происходит проверка, не равен ли знаменатель нулю. Если равен нулю, устанавливается флаг failbit для потока ввода in с помощью in.setstate(std::ios::failbit), чтобы показать, что произошла ошибка чтения.
+
+    * Строка in.setstate(std::ios::failbit); используется для установки флага failbit в потоке ввода in. Флаг failbit представляет собой один из состояний потока ввода std::istream в стандартной библиотеке C++, который указывает на возникновение ошибки ввода.
+    * Когда устанавливается флаг failbit, это означает, что произошла некорректная операция ввода, и последующие операции чтения из этого потока будут проигнорированы до тех пор, пока флаг не будет сброшен.
+
+5. Создание объекта Rational: Если числитель и знаменатель успешно считаны и знаменатель не равен нулю, создается объект Rational с полученными числителем и знаменателем.
+
+Этот оператор operator>> позволяет читать рациональные числа из потока ввода с помощью std::istream, выполняя необходимые проверки на корректность ввода и обработку возможных ошибок чтения.
+
