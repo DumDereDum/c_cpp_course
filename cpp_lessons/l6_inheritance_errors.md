@@ -1,32 +1,4 @@
-## Const and not const
-
-``` C++
-#include <iostream>
-using namespace std;
- 
-class Base {
-public:
-    int b = 10;
-    virtual void show() const { cout << "In Base \n"; };
-};
- 
-class Derived : public Base {
-public:
-    void show() const { cout << "In Derived const\n"; }
-    void show()       { cout << "In Derived \n"; }
-};
- 
-int main(void)
-{
-    Derived d;
-    Base* bp = &d;
-    bp->show();
-    d.show();
-    static_cast<Base*>(&d)->show();
-    
-    return 0;
-}
-```
+## Пример 1: const and not const
 
 ``` C++
 #include <iostream>
@@ -49,6 +21,88 @@ int main(void)
     return 0;
 }
 ```
+Вывод:
+```
+In Test 
+In Test const
+```
+
+1. `t.show();`: Здесь объект `t` типа `Test` вызывает не константную версию функции `show()`, поскольку `t` является модифицируемым объектом типа `Test`.
+
+2. `ct.show();`: Объект `ct`, объявленный как `const Test`, вызывает константную версию функции `show()`, поскольку он является константным объектом. 
+
+
+## Пример 2: const and not const
+
+``` C++
+#include <iostream>
+using namespace std;
+ 
+class Base {
+public:
+    virtual void show() const { cout << "In Base const\n"; };
+};
+ 
+class Derived : public Base {
+public:
+    void show() const { cout << "In Derived const\n"; }
+    void show()       { cout << "In Derived \n"; }
+};
+ 
+int main(void)
+{
+    Derived d;
+    Base* bp = &d;
+    d.show();
+    bp->show();
+    static_cast<Base*>(&d)->show();
+    d.Base::show();
+    bp->Base::show();
+
+    cout << endl;
+    const Derived cd;
+    const Base* cbp = &cd;
+    cd.show();
+    cbp->show();
+    static_cast<const Base*>(&cd)->show();
+    cd.Base::show();
+    cbp->Base::show();
+
+    return 0;
+}
+```
+Вывод:
+```
+In Derived 
+In Derived const
+In Derived const
+In Base const
+In Base const
+
+In Derived const
+In Derived const
+In Derived const
+In Base const
+In Base const
+```
+
+В этом примере вывод программы состоит из следующих строк:
+
+1. `In Derived` - вызов `d.show()` вызывает не константную версию функции `show()` из класса `Derived`.
+2. `In Derived const` - `bp->show()` вызывает виртуальную функцию `show()`. Так как `bp` указывает на объект `d`, который является объектом класса `Derived`, вызывается константная версия `show()` из класса `Derived`.
+3. `In Derived const` - `static_cast<Base*>(&d)->show()` выполняет приведение указателя к типу `Base*`, но вызывает виртуальную функцию, так что снова вызывается константная версия `show()` из класса `Derived`.
+4. `In Base const` - `d.Base::show()` вызывает константную версию функции `show()` из класса `Base`.
+5. `In Base const` - `bp->Base::show()` вызывает константную версию функции `show()` из класса `Base`.
+
+Далее, когда создается объект `const Derived cd;` и `const Base* cbp = &cd;`, их поведение следующее:
+
+6. `In Derived const` - `cd.show()` вызывает константную версию функции `show()` из класса `Derived`.
+7. `In Derived const` - `cbp->show()` вызывает виртуальную функцию `show()`. Так как `cbp` указывает на объект `cd`, который является объектом класса `Derived`, вызывается константная версия `show()` из класса `Derived`.
+8. `In Derived const` - `static_cast<const Base*>(&cd)->show()` выполняет приведение указателя к типу `const Base*`, но вызывает виртуальную функцию, так что снова вызывается константная версия `show()` из класса `Derived`.
+9. `In Base const` - `cd.Base::show()` вызывает константную версию функции `show()` из класса `Base`.
+10. `In Base const` - `cbp->Base::show()` вызывает константную версию функции `show()` из класса `Base`.
+
+Таким образом, вывод программы соответствует логике виртуальных функций, наследования и использования квалификаторов `const`.
 
 
 ```C++
@@ -92,8 +146,41 @@ int main(){
     cout << endl;
 }
 ```
+Вывод:
+```
+A a;
+A::f()
+
+B b;
+A::f()
+B::f()
+
+A *p = new B;
+A::f()
+B::f()
+
+p->f();
+B::f()
+
+delete p;
+B::f()
+A::f()
+```
+
+Давайте разберем вывод программы по шагам:
+
+1. `A a;` - Создается объект класса `A`. При этом вызывается конструктор `A()`, который вызывает виртуальную функцию `f()`. Однако, поскольку объект еще не полностью создан, вызывается версия функции из самого базового класса `A`. Поэтому выводится `A::f()`.
+
+2. `B b;` - Создается объект класса `B`. Вызывается конструктор `B()`, который также вызывает виртуальную функцию `f()`. Но уже поскольку объект `B` создан, вызывается переопределенная версия функции из класса `B`. Поэтому выводится `B::f()`. После завершения конструктора `B` вызывается деструктор `~B()`, который снова вызывает виртуальную функцию `f()`. Однако, так как объект `B` уничтожается, вызывается версия функции из класса `B` - `B::f()`.
+
+3. `A *p = new B;` - Создается указатель типа `A*`, который указывает на объект класса `B`. При этом вызывается конструктор `B()`, аналогично шагу 2. Здесь выводится `A::f()`, потому что в конструкторе `B()` сначала вызывается конструктор `A()`. После завершения этого оператора, `p` указывает на объект типа `B`.
+
+4. `p->f();` - Вызывается виртуальная функция `f()` через указатель `p`. Указатель `p` указывает на объект класса `B`. Поэтому выводится `B::f()`.
+
+5. `delete p;` - Вызывается оператор `delete` для освобождения памяти, выделенной под объект, на который указывает `p`. В процессе уничтожения объекта вызывается деструктор. Поскольку `p` указывает на объект типа `B`, сначала вызывается деструктор класса `B`, который выводит `B::f()`, а затем вызывается деструктор класса `A`, который выводит `A::f()`.
 
 
+## Пример 3: Compile error
 ```C++
 #include <iostream>
 
@@ -112,25 +199,67 @@ int main()
     return 0;
 }
 ```
+Вывод:
+```
+<source>: In constructor 'A::A()':
+<source>:7:16: warning: pure virtual 'virtual void A::f()' called from constructor
+    7 |         this->f();
+      |         ~~~~~~~^~
+<source>: In function 'int main()':
+<source>:13:16: error: invalid cast to abstract class type 'A'
+   13 |     auto a = A();
+      |                ^
+<source>:3:7: note:   because the following virtual functions are pure within 'A':
+    3 | class A{
+      |       ^
+<source>:5:18: note:     'virtual void A::f()'
+    5 |     virtual void f() = 0;
+      |                  ^
+```
+Этот код показывает проблему вызова чисто виртуальной функции из конструктора, что приводит к неожиданным результатам и нежелательным последствиям.
 
+Давайте разберем код и вывод по шагам:
+
+1. В классе `A` определена чисто виртуальная функция `f()`, обозначенная ключевым словом `virtual` и `= 0`. Это означает, что класс `A` абстрактный, то есть нельзя создавать его экземпляры.
+
+2. В конструкторе класса `A` вызывается функция `f()`. При этом возникает проблема, потому что чисто виртуальная функция не имеет определения в классе `A`.
+
+3. В функции `main()` создается объект `a` типа `A`. Это вызывает конструктор класса `A`.
+
+Теперь давайте рассмотрим вывод:
+
+- Компилятор выдает предупреждение (warning), что чисто виртуальная функция `f()` вызывается из конструктора класса `A`.
+- Однако, на этапе компиляции возникает ошибка (error), связанная с попыткой создания объекта класса `A`. Класс `A` абстрактный из-за наличия чисто виртуальной функции `f()`, для которой нет реализации в классе `A`. Поэтому объекты класса `A` нельзя создавать.
+
+Таким образом, вывод программы представлен сообщением компилятора о вызове чисто виртуальной функции из конструктора, а затем сообщением об ошибке, связанной с попыткой создания объекта абстрактного класса.
+
+
+## Пример 4: Runtime error
 ```C++
 #include <iostream>
+using namespace std;
 
 class A{
     public:
     virtual void f() = 0;
     void func(){
+        cout << "A::func()" << endl;
         this->f();
         return;
     }
     A(){
+        cout << "A::A()" << endl;
         this->func();
     };
 };
 
 class B : public A{
     public:
+    B(){
+        cout << "B::B()" << endl;
+    };
     virtual void f() override{
+        cout << "B::f()" << endl;
         return;
     };
     
@@ -139,107 +268,32 @@ class B : public A{
 int main()
 {
     auto a = B();
-
     return 0;
 }
 ```
-
-
-```C++
-#include <iostream>
-using namespace std;
-
-class Device {
-    public: 
-        Device() { cout << "\tDevice created" << endl; };
-        void turn_on() { cout << "\tDevice is on." << endl; }
-};
-class Computer: public Device {
-    public: 
-        Computer() { cout << "\tComputer created" << endl; };
-        void turn_on() { cout << "\tComputer is on." << endl; }
-};
-class Monitor: public Device {
-    public: 
-        Monitor() { cout << "\tMonitor created" << endl; };
-        void turn_on() { cout << "\tMonitor is on." << endl; }
-};
-class Laptop: public Computer, public Monitor {
-    public: 
-        Laptop() { cout << "\tLaptop created" << endl; };
-        void turn_on() { cout << "\tLaptop is on." << endl; }
-};
-
-int main() {
-    cout << "Laptop Laptop_instance;" << endl;
-    Laptop Laptop_instance;
-
-    cout << "Laptop_instance turn_on();" << endl;
-    Laptop_instance.turn_on();
-    Laptop_instance.Monitor::turn_on();
-    static_cast<Monitor&>( Laptop_instance ).turn_on();
-    Laptop_instance.Computer::turn_on();
-    static_cast<Computer&>( Laptop_instance ).turn_on();
-    // Laptop_instance.Device::turn_on();
-    // static_cast<Device&>( Laptop_instance ).turn_on();
-
-    cout << "Laptop Laptop_instance;" << endl;
-    Computer Computer_instance;
-
-    cout << "Computer_instance turn_on();" << endl;
-    Computer_instance.turn_on();
-    Computer_instance.Device::turn_on();
-
-    return 0;
-}
+Вывод
 ```
+A::A()
+A::func()
 
-
-```C++
-#include <iostream>
-using namespace std;
-
-class Device {
-    public: 
-        Device() { cout << "\tDevice created" << endl; };
-        void turn_on() { cout << "\tDevice is on." << endl; }
-};
-class Computer: virtual public Device {
-    public: 
-        Computer() { cout << "\tComputer created" << endl; };
-        void turn_on() { cout << "\tComputer is on." << endl; }
-};
-class Monitor: virtual public Device {
-    public: 
-        Monitor() { cout << "\tMonitor created" << endl; };
-        void turn_on() { cout << "\tMonitor is on." << endl; }
-};
-class Laptop: virtual public Computer, public Monitor {
-    public: 
-        Laptop() { cout << "\tLaptop created" << endl; };
-        void turn_on() { cout << "\tLaptop is on." << endl; }
-};
-
-int main() {
-    cout << "Laptop Laptop_instance;" << endl;
-    Laptop Laptop_instance;
-
-    cout << "Laptop_instance turn_on();" << endl;
-    Laptop_instance.turn_on();
-    Laptop_instance.Monitor::turn_on();
-    static_cast<Monitor&>( Laptop_instance ).turn_on();
-    Laptop_instance.Computer::turn_on();
-    static_cast<Computer&>( Laptop_instance ).turn_on();
-    Laptop_instance.Device::turn_on();
-    static_cast<Device&>( Laptop_instance ).turn_on();
-
-    cout << "Laptop Laptop_instance;" << endl;
-    Computer Computer_instance;
-
-    cout << "Computer_instance turn_on();" << endl;
-    Computer_instance.turn_on();
-    Computer_instance.Device::turn_on();
-
-    return 0;
-}
+pure virtual method called
+terminate called without an active exception
+Program terminated with signal: SIGSEGV
 ```
+Этот код и вывод демонстрируют проблему вызова чисто виртуальной функции из конструктора базового класса, когда эта функция не определена в производном классе. Давайте разберем код и вывод по шагам:
+
+1. Класс `A` определяет чисто виртуальную функцию `f()`, а также метод `func()`, который вызывает функцию `f()`. В конструкторе класса `A` сначала выводится сообщение "A::A()", затем вызывается метод `func()`. 
+
+2. Класс `B` наследуется от класса `A` и переопределяет виртуальную функцию `f()`. В конструкторе класса `B` выводится сообщение "B::B()".
+
+3. В функции `main()` создается объект `a` типа `B`. Это вызывает конструктор класса `B`.
+
+Теперь давайте рассмотрим вывод:
+
+- При создании объекта `a` типа `B` сначала вызывается конструктор класса `A`, выводится "A::A()". Затем вызывается метод `func()`, выводится "A::func()".
+- Однако, в классе `A` не предоставлена реализация для функции `f()`, и вызов этой функции в методе `func()` приводит к ошибке "pure virtual method called", так как функция `f()` является чисто виртуальной.
+- После этого программа завершается аварийно (crash) с сигналом `SIGSEGV`, что указывает на ошибку сегментации. Это происходит, потому что программа пытается обратиться к недопустимой области памяти.
+
+Таким образом, вывод программы указывает на проблему с вызовом чисто виртуальной функции без определения в производном классе, что приводит к аварийному завершению программы.
+
+
