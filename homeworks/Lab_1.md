@@ -115,3 +115,54 @@
 ---
 
 **Примечание**: Убедитесь, что программа корректно освобождает всю выделенную динамическую память во избежание утечек памяти.
+
+---
+
+### Небольшая подсказка
+
+```C
+#include <stdio.h>
+#include <unistd.h>
+
+#define SIZE 5
+
+void print_matrix(char matrix[SIZE][SIZE]) {
+    printf("\033[H");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf("%c ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    fflush(stdout);
+}
+
+void set_matrix_position(int row, int col) {
+    printf("\033[%d;%dH", row + 1, (col + 1) * 2 - 1 );
+}
+
+int main() {
+    char matrix[SIZE][SIZE] = {
+        {'A', 'B', 'C', 'D', 'E'},
+        {'F', 'G', 'H', 'I', 'J'},
+        {'K', 'L', 'M', 'N', 'O'},
+        {'P', 'Q', 'R', 'S', 'T'},
+        {'U', 'V', 'W', 'X', 'Y'}
+    };
+
+    print_matrix(matrix);
+    sleep(2);
+
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            matrix[i][j] = '0';
+            set_matrix_position(i, j);
+            printf("%c", matrix[i][j]);
+            fflush(stdout);
+            sleep(1);
+        }
+    }
+
+    return 0;
+}
+```
